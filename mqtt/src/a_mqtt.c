@@ -95,10 +95,6 @@ static void adc_cb(void *arg) {
 
 void MQTTInstallEventHandler(){
   
-  
-
-  //./mgos_mqtt_global_subscribe(mg_mk_str("askotest"), mqtt_control_handler, NULL);
-
   mgos_mqtt_add_global_handler(ev_handler, NULL);
 
   mgos_set_timer(1000 /* ms */, true /* repeat */, adc_cb, NULL);  

@@ -578,8 +578,8 @@
   - title: Keep AP enabled when station is on
 - - hysteresis
   - i
-  - 123
-  - title: Some integer value
+  - 0
+  - title: 'Some integer value '
 - - mqtt.pub
   - s
   - /response

@@ -204,5 +204,5 @@
   ["wifi.sta2.dhcp_hostname", "s", {"title": "Host name to include in DHCP requests"}],
   ["wifi.sta_cfg_idx", "i", {"title": "WiFi station config index to use, 0, 1 or 2"}],
   ["wifi.sta_connect_timeout", "i", {"title": "Timeout for connection, seconds"}],
-  ["hysteresis", "i", {"title": "Some integer value"}]
+  ["hysteresis", "i", {"title": "Some integer value "}]
 ]

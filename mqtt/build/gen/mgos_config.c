@@ -409,7 +409,7 @@ const struct mgos_config mgos_config_defaults = {
   .wifi.sta2.dhcp_hostname = NULL,
   .wifi.sta_cfg_idx = 0,
   .wifi.sta_connect_timeout = 30,
-  .hysteresis = 123,
+  .hysteresis = 0,
 };
 
 /* debug */

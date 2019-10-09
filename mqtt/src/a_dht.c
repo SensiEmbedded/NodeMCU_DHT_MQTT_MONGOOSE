@@ -15,7 +15,18 @@ bool forcePublishData = false;
 
 
 void SaveNewHistValue(float val){
+  char mess[50];
   //todo: Save to global config
+  if( currentHumidityHysteresis != val){
+    // Hysteresis in config_schema: is:
+    //- ["hysteresis", "i", 0, {title: "Some integer value "}]
+    // because I cannot find in documentation how to declare float value
+    // 
+    //mgos_config_apply("{\"hysteresis\": 17}", true);//this is working
+    sprintf(mess,"{\"hysteresis\": %d}",(int)val);
+    mgos_config_apply(mess, true);
+  }
+
   currentHumidityHysteresis = val;
 
 }
@@ -92,7 +103,7 @@ static void gpio_int_handler(int pin, void *arg) {
 
 int DHTInstallEventHandlerTimer(){
 
-  //mgos_config_apply("{\"hysteresis\": 17}", true);
+  
   
   int h = mgos_sys_config_get_hysteresis();
   currentHumidityHysteresis = (float)h;
