@@ -1,0 +1,9 @@
+{
+  "mos.board": "ESP8266",
+  "mos.port": "",
+  "files.associations": {
+    "mgos.h": "c",
+    "a_dht.h": "c",
+    "platform_esp8266.h": "c"
+  }
+}

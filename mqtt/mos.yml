@@ -1,0 +1,48 @@
+name: c_mqtt
+# arch: PLATFORM
+version: 1.0
+manifest_version: 2017-05-18
+
+libs_version: ${mos_version}
+modules_version: ${mos_version}
+mongoose_os_version: ${mos_version}
+tags:
+  - js
+  - c
+  - hw
+sources:
+  - src
+filesystem:
+  - fs
+config_schema:
+  - ["mqtt.pub", "s", "/response", {title: "Publish topic"}]
+  - ["mqtt.sub", "s", "/request", {title: "Subscribe topic"}]
+  - ["mqtt.server", "broker.hivemq.com:1883"]
+  - ["mqtt.enable", true]
+  - ["mqtt.client_id","asko12341234"]
+  - ["device.id", "asko12341234"]
+  - ["device.password", "test"]
+  - ["pins.led", 2]
+  - ["pins.button", 0]
+  - ["wifi.sta.enable",true]
+  - ["wifi.sta.ssid","SensiEmbedded3"]
+  
+libs:
+  - origin: https://github.com/mongoose-os-libs/aws
+  - origin: https://github.com/mongoose-os-libs/ca-bundle
+  - origin: https://github.com/mongoose-os-libs/http-server
+  - origin: https://github.com/mongoose-os-libs/ota-http-server
+  - origin: https://github.com/mongoose-os-libs/rpc-loopback
+  - origin: https://github.com/mongoose-os-libs/rpc-mqtt
+  - origin: https://github.com/mongoose-os-libs/rpc-service-config
+  - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+  - origin: https://github.com/mongoose-os-libs/rpc-service-gpio
+  - origin: https://github.com/mongoose-os-libs/rpc-service-ota
+  - origin: https://github.com/mongoose-os-libs/rpc-uart
+  - origin: https://github.com/mongoose-os-libs/spi
+  - origin: https://github.com/mongoose-os-libs/vfs-dev-spi-flash
+  - origin: https://github.com/mongoose-os-libs/wifi
+  - origin: https://github.com/mongoose-os-libs/dht
+  - origin: https://github.com/mongoose-os-libs/mjs  
+build_vars:
+  SSL: mbedTLS
