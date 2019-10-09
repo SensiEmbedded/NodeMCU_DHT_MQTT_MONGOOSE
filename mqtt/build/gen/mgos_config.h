@@ -230,6 +230,7 @@ struct mgos_config {
   struct mgos_config_rpc rpc;
   struct mgos_config_spi spi;
   struct mgos_config_wifi wifi;
+  int hysteresis;
 };
 
 
@@ -1831,6 +1832,14 @@ int mgos_config_get_wifi_sta_connect_timeout(struct mgos_config *cfg);
 static inline int mgos_sys_config_get_wifi_sta_connect_timeout(void) { return mgos_config_get_wifi_sta_connect_timeout(&mgos_sys_config); }
 void mgos_config_set_wifi_sta_connect_timeout(struct mgos_config *cfg, int v);
 static inline void mgos_sys_config_set_wifi_sta_connect_timeout(int v) { mgos_config_set_wifi_sta_connect_timeout(&mgos_sys_config, v); }
+
+/* hysteresis */
+#define MGOS_CONFIG_HAVE_HYSTERESIS
+#define MGOS_SYS_CONFIG_HAVE_HYSTERESIS
+int mgos_config_get_hysteresis(struct mgos_config *cfg);
+static inline int mgos_sys_config_get_hysteresis(void) { return mgos_config_get_hysteresis(&mgos_sys_config); }
+void mgos_config_set_hysteresis(struct mgos_config *cfg, int v);
+static inline void mgos_sys_config_set_hysteresis(int v) { mgos_config_set_hysteresis(&mgos_sys_config, v); }
 
 bool mgos_sys_config_get(const struct mg_str key, struct mg_str *value);
 bool mgos_sys_config_set(const struct mg_str key, const struct mg_str value, bool free_strings);

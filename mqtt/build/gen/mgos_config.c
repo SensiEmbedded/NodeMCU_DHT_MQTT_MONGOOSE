@@ -10,8 +10,8 @@
 
 #include "mgos_config_util.h"
 
-const struct mgos_conf_entry mgos_config_schema_[206] = {
-  {.type = CONF_TYPE_OBJECT, .key = "", .offset = 0, .num_desc = 205},
+const struct mgos_conf_entry mgos_config_schema_[207] = {
+  {.type = CONF_TYPE_OBJECT, .key = "", .offset = 0, .num_desc = 206},
   {.type = CONF_TYPE_OBJECT, .key = "debug", .offset = offsetof(struct mgos_config, debug), .num_desc = 10},
   {.type = CONF_TYPE_STRING, .key = "udp_log_addr", .offset = offsetof(struct mgos_config, debug.udp_log_addr)},
   {.type = CONF_TYPE_INT, .key = "mbedtls_level", .offset = offsetof(struct mgos_config, debug.mbedtls_level)},
@@ -217,6 +217,7 @@ const struct mgos_conf_entry mgos_config_schema_[206] = {
   {.type = CONF_TYPE_STRING, .key = "dhcp_hostname", .offset = offsetof(struct mgos_config, wifi.sta2.dhcp_hostname)},
   {.type = CONF_TYPE_INT, .key = "sta_cfg_idx", .offset = offsetof(struct mgos_config, wifi.sta_cfg_idx)},
   {.type = CONF_TYPE_INT, .key = "sta_connect_timeout", .offset = offsetof(struct mgos_config, wifi.sta_connect_timeout)},
+  {.type = CONF_TYPE_INT, .key = "hysteresis", .offset = offsetof(struct mgos_config, hysteresis)},
 };
 
 const struct mgos_conf_entry *mgos_config_schema() {
@@ -408,6 +409,7 @@ const struct mgos_config mgos_config_defaults = {
   .wifi.sta2.dhcp_hostname = NULL,
   .wifi.sta_cfg_idx = 0,
   .wifi.sta_connect_timeout = 30,
+  .hysteresis = 123,
 };
 
 /* debug */
@@ -2389,6 +2391,16 @@ int mgos_config_get_wifi_sta_connect_timeout(struct mgos_config *cfg) {
 }
 void mgos_config_set_wifi_sta_connect_timeout(struct mgos_config *cfg, int v) {
   cfg->wifi.sta_connect_timeout = v;
+}
+
+/* hysteresis */
+#define MGOS_CONFIG_HAVE_HYSTERESIS
+#define MGOS_SYS_CONFIG_HAVE_HYSTERESIS
+int mgos_config_get_hysteresis(struct mgos_config *cfg) {
+  return cfg->hysteresis;
+}
+void mgos_config_set_hysteresis(struct mgos_config *cfg, int v) {
+  cfg->hysteresis = v;
 }
 bool mgos_sys_config_get(const struct mg_str key, struct mg_str *value) {
   return mgos_config_get(key, value, &mgos_sys_config, mgos_config_schema());

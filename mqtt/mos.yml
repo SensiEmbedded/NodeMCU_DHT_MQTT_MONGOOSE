@@ -15,6 +15,7 @@ sources:
 filesystem:
   - fs
 config_schema:
+  - ["hysteresis", "i", 0, {title: "Some integer value"}]
   - ["mqtt.pub", "s", "/response", {title: "Publish topic"}]
   - ["mqtt.sub", "s", "/request", {title: "Subscribe topic"}]
   - ["mqtt.server", "broker.hivemq.com:1883"]

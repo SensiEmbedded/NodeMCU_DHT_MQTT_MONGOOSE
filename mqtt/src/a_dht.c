@@ -5,13 +5,22 @@
 #include "mgos_rpc.h"
 #include <math.h>
 
+int led = 2;
+
 static struct mgos_dht *s_dht = NULL;
-static int led = 2;
 bool blink = false;
 float currentHumidityHysteresis = 0;
+float hum, temp;
+bool forcePublishData = false;
 
 
-static void CheckMeasurementsForSignificantChange(float hum, float temp){
+void SaveNewHistValue(float val){
+  //todo: Save to global config
+  currentHumidityHysteresis = val;
+
+}
+
+static void CheckMeasurementsForSignificantChange(float hum, float temp,bool forcePublish){
   static int first = 0;
   static float hum_last;
   char mess[50];
@@ -20,9 +29,12 @@ static void CheckMeasurementsForSignificantChange(float hum, float temp){
     hum_last = -1000;//force to publish 
   }
 
-  if( fabs(hum_last - hum) > currentHumidityHysteresis){
-    sprintf(mess, "hum = %f, temp = %f",hum,temp);
-    if( MqttPublishMeasuredDataIfNeeded(mess) == true){
+  //LOG(LL_INFO, ("hum_last = %f",hum_last));
+
+  if( (fabs(hum_last - hum) > currentHumidityHysteresis )||( forcePublish == true)){
+    sprintf(mess, "hum = %f, temp = %f,hyst = %f",hum,temp,currentHumidityHysteresis);
+    LOG(LL_INFO, (mess));
+    if( MqttPublishMeasuredData(mess) == true){
       hum_last = hum;
     }
   }
@@ -44,28 +56,49 @@ static void dht_timer_cb(void *arg) {
     LOG(LL_INFO, ("Failed to read data from sensor\n"));
     return;
   }
-  CheckMeasurementsForSignificantChange(h,t);
-
+  hum = h;//set global variables
+  temp = t;
+  CheckMeasurementsForSignificantChange(h,t,forcePublishData /*forcePublish*/);
+  if(forcePublishData == true){
+    forcePublishData = false;
+  }
+  
   //LOG(LL_INFO, ("Temp: %f *C Humidity: %f %%\n", t, h));
   (void) arg;
 }
 static void rpc_cb(struct mg_rpc_request_info *ri, void *cb_arg,
                    struct mg_rpc_frame_info *fi, struct mg_str args) {
-  //float t = mgos_dht_get_temp(cb_arg);
   (void)cb_arg;
   float t = mgos_dht_get_temp(s_dht);
   float h = mgos_dht_get_humidity(s_dht);
-  
-  
-
   mg_rpc_send_responsef(ri, "{temp: %lf, hum: %lf}",t,h);
   //mg_rpc_send_responsef(ri, "{temp: %lf; hum: %lf}", mgos_dht_get_temp(cb_arg),mgos_dht_get_humidity(cb_arg)));
   (void) fi;
   (void) args;
 }
+
+static void gpio_int_handler(int pin, void *arg) {
+  char mess[50];
+  CheckMeasurementsForSignificantChange(hum,temp,false /*forcePublish*/);
+
+  sprintf(mess, "hum = %f, temp = %f,hyst = %f",hum,temp,currentHumidityHysteresis);
+  MqttPublishMeasuredData(mess);
+  //snprintf(topic, sizeof(topic), "askoOut");
+  //LOG(LL_INFO,(topic));         
+  mgos_gpio_toggle(led);
+  (void) arg;
+  (void) pin;
+}  
+
 int DHTInstallEventHandlerTimer(){
-  (void)led;
-  //./mgos_gpio_set_mode(led,MGOS_GPIO_MODE_OUTPUT);
+
+  //mgos_config_apply("{\"hysteresis\": 17}", true);
+  
+  int h = mgos_sys_config_get_hysteresis();
+  currentHumidityHysteresis = (float)h;
+  LOG(LL_INFO, ("Read hyst from conf %d\n",h));
+
+
   //if ((s_dht = mgos_dht_create(16, DHT11)) == NULL){ 
   //pin 14 == D5; pin 16 D0  
   if ((s_dht = mgos_dht_create(14, DHT11)) == NULL){ 
@@ -74,6 +107,14 @@ int DHTInstallEventHandlerTimer(){
   }
   mg_rpc_add_handler(mgos_rpc_get_global(), "Temp.Read", "", rpc_cb, s_dht);
   mgos_set_timer(2000 /* ms */, true /* repeat */, dht_timer_cb, NULL);  
+
+  mgos_gpio_set_mode(led,MGOS_GPIO_MODE_OUTPUT);
+
+  int pin = 0;
+  
+  mgos_gpio_set_button_handler(pin, MGOS_GPIO_PULL_UP,
+                                   MGOS_GPIO_INT_EDGE_POS, 50, gpio_int_handler,
+                                   NULL);
   
   return 0;
 }  
