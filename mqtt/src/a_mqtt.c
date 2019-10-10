@@ -82,7 +82,7 @@ static void ev_handler(struct mg_connection *c, int ev, void *p,
   } else if (ev == MG_EV_MQTT_PUBLISH) {
     struct mg_str *s = &msg->payload;
     LOG(LL_INFO, ("got command: [%.*s]", (int) s->len, s->p));
-    // Our subscription is at QoS 1, we must acknowledge messages sent to us. 
+    // Our subscription is at QoS 1, we must acknowledge messages sent to us.. 
     mg_mqtt_puback(c, msg->message_id);
   }
   (void) user_data;
